@@ -1,0 +1,52 @@
+{
+  "name": "vscode-extension-scaffold",
+  "displayName": "vscode-extension-scaffold",
+  "description": "A minimal VS Code extension starter.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.108.0"
+  },
+  "publisher": "your-publisher-name",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/vscode-extension-scaffold.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-extension-scaffold.helloWorld",
+        "title": "Scaffold: Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "package": "vsce package",
+    "package:minor": "vsce package minor",
+    "package:major": "vsce package major",
+    "publish": "vsce publish",
+    "publish:minor": "vsce publish minor",
+    "publish:major": "vsce publish major"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^18.19.130",
+    "@types/vscode": "^1.108.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^8.57.1",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "customActions.directories": [
+    ".vscode/custom-actions",
+    "tools/actions"
+  ]
+}

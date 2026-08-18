@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Package extension
-        run: npx --yes @vscode/vsce package --out "vscode-extension-scaffold-${GITHUB_REF_NAME#v}.vsix"
+        run: npx --yes @vscode/vsce package --out "vscode-extension-custom-actions-${GITHUB_REF_NAME#v}.vsix"
 
       - name: Create release
         uses: softprops/action-gh-release@v2

@@ -1,0 +1,5 @@
+{
+  "name": "Insert Timestamp",
+  "description": "Inserts the current ISO timestamp at the cursor in the active editor.",
+  "category": "Demo"
+}

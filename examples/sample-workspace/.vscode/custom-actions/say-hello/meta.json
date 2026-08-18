@@ -1,0 +1,5 @@
+{
+  "name": "Say Hello",
+  "description": "Prints a greeting to the Custom Actions output channel and shows an information message.",
+  "category": "Demo"
+}

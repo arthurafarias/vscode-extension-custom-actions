@@ -1,7 +1,7 @@
 {
-  "name": "vscode-extension-scaffold",
-  "displayName": "vscode-extension-scaffold",
-  "description": "A minimal VS Code extension starter.",
+  "name": "vscode-extension-custom-actions",
+  "displayName": "vscode-extension-custom-actions",
+  "description": "Load custom command palette actions from JavaScript files in your workspace.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.108.0"
@@ -9,20 +9,41 @@
   "publisher": "your-publisher-name",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/vscode-extension-scaffold.git"
+    "url": "git+https://github.com/arthurafarias/vscode-extension-custom-actions.git"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-extension-scaffold.helloWorld",
-        "title": "Scaffold: Hello World"
+        "command": "customActions.run",
+        "title": "Custom Actions: Run..."
+      },
+      {
+        "command": "customActions.reload",
+        "title": "Custom Actions: Reload"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Custom Actions",
+      "properties": {
+        "customActions.directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".vscode/custom-actions"
+          ],
+          "description": "Workspace-relative directories to scan for custom actions. Each immediate subdirectory should contain a meta.json and an entry.js."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

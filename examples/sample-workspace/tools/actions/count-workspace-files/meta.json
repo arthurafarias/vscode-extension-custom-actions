@@ -1,0 +1,5 @@
+{
+  "name": "Count Workspace Files",
+  "description": "Counts the files directly under the workspace root and shows the total.",
+  "category": "Demo"
+}

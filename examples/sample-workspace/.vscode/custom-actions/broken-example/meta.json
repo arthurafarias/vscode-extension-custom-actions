@@ -1,0 +1,5 @@
+{
+  "name": "Broken Example",
+  "description": "Intentionally throws while loading, to demonstrate the load-failure notification.",
+  "category": "Demo"
+}

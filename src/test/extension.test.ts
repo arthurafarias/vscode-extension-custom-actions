@@ -5,7 +5,7 @@ suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
 	test('Extension activates and registers its commands', async () => {
-		const ext = vscode.extensions.getExtension('your-publisher-name.vscode-extension-custom-actions');
+		const ext = vscode.extensions.getExtension('arthurafarias.vscode-extension-custom-actions');
 		assert.ok(ext, 'extension not found');
 		await ext.activate();
 

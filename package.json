@@ -6,7 +6,7 @@
   "engines": {
     "vscode": "^1.108.0"
   },
-  "publisher": "your-publisher-name",
+  "publisher": "arthurafarias",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arthurafarias/vscode-extension-custom-actions.git"

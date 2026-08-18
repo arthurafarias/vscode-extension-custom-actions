@@ -27,6 +27,14 @@
       {
         "command": "customActions.reload",
         "title": "Custom Actions: Reload"
+      },
+      {
+        "command": "customActions.edit",
+        "title": "Custom Actions: Edit..."
+      },
+      {
+        "command": "customActions.new",
+        "title": "Custom Actions: Create New Action..."
       }
     ],
     "configuration": {
@@ -68,6 +76,7 @@
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^8.57.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vsce": "^2.15.0"
   }
 }

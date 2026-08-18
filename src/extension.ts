@@ -7,8 +7,11 @@ const CONFIG_DIRECTORIES = 'directories';
 const DEFAULT_ACTIONS_DIR = '.vscode/custom-actions';
 const RELOAD_COMMAND = 'customActions.reload';
 const RUN_COMMAND = 'customActions.run';
+const EDIT_COMMAND = 'customActions.edit';
+const NEW_COMMAND = 'customActions.new';
 const META_FILE = 'meta.json';
 const ENTRY_FILE = 'entry.js';
+const VALID_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
 interface ActionMeta {
 	name?: string;
@@ -24,6 +27,7 @@ interface LoadFailure {
 interface ActionInfo {
 	label: string;
 	description: string;
+	actionDir: string;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -172,6 +176,103 @@ export function activate(context: vscode.ExtensionContext) {
 			await vscode.commands.executeCommand(picked.commandId);
 		}
 	}));
+
+	const revealAndOpenEntry = async (entryPath: string) => {
+		const entryUri = vscode.Uri.file(entryPath);
+		await vscode.commands.executeCommand('revealInExplorer', entryUri);
+		const doc = await vscode.workspace.openTextDocument(entryUri);
+		await vscode.window.showTextDocument(doc);
+	};
+
+	context.subscriptions.push(vscode.commands.registerCommand(EDIT_COMMAND, async () => {
+		if (actionInfo.size === 0) {
+			vscode.window.showInformationMessage('No custom actions loaded. Check the "Custom Actions" output channel, or add one under .vscode/custom-actions.');
+			return;
+		}
+
+		const items = Array.from(actionInfo.values()).map(info => ({
+			label: info.label,
+			description: info.description,
+			actionDir: info.actionDir
+		}));
+
+		const picked = await vscode.window.showQuickPick(items, {
+			placeHolder: 'Select a custom action to edit',
+			matchOnDescription: true
+		});
+
+		if (picked) {
+			await revealAndOpenEntry(path.join(picked.actionDir, ENTRY_FILE));
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(NEW_COMMAND, async () => {
+		const wsFolder = vscode.workspace.workspaceFolders?.[0];
+		if (!wsFolder) {
+			vscode.window.showErrorMessage('No workspace open; cannot create a custom action.');
+			return;
+		}
+
+		const root = wsFolder.uri.fsPath;
+		const configuredDirs = getConfiguredDirectories();
+
+		let targetRelDir: string;
+		if (configuredDirs.length === 1) {
+			targetRelDir = configuredDirs[0];
+		} else {
+			const dirPick = await vscode.window.showQuickPick(configuredDirs, {
+				placeHolder: 'Select a directory to create the new action in'
+			});
+			if (!dirPick) {
+				return;
+			}
+			targetRelDir = dirPick;
+		}
+
+		const targetDir = path.join(root, targetRelDir);
+
+		const actionName = await vscode.window.showInputBox({
+			prompt: 'Enter a name for the new action (used as the folder name)',
+			validateInput: value => {
+				if (!value || !value.trim()) {
+					return 'Name is required';
+				}
+				if (!VALID_NAME_PATTERN.test(value)) {
+					return 'Only letters, numbers, hyphens, and underscores are allowed';
+				}
+				if (fs.existsSync(path.join(targetDir, value))) {
+					return 'An action with this name already exists';
+				}
+				return undefined;
+			}
+		});
+
+		if (!actionName) {
+			return;
+		}
+
+		const description = await vscode.window.showInputBox({
+			prompt: 'Enter a short description for this action',
+			validateInput: value => (!value || !value.trim()) ? 'Description is required' : undefined
+		});
+
+		if (!description) {
+			return;
+		}
+
+		const actionDir = path.join(targetDir, actionName);
+		fs.mkdirSync(actionDir, { recursive: true });
+
+		const meta: ActionMeta = { name: actionName, description };
+		fs.writeFileSync(path.join(actionDir, META_FILE), JSON.stringify(meta, null, 2) + '\n', 'utf8');
+
+		const entryTemplate = `module.exports = async function ({ vscode, workspaceRoot, actionDir, output }) {\n\t// TODO: implement "${actionName}"\n};\n`;
+		fs.writeFileSync(path.join(actionDir, ENTRY_FILE), entryTemplate, 'utf8');
+
+		output.appendLine(`Created new custom action "${actionName}" at ${actionDir}`);
+
+		await revealAndOpenEntry(path.join(actionDir, ENTRY_FILE));
+	}));
 }
 
 function readMeta(metaPath: string): ActionMeta {
@@ -253,7 +354,7 @@ function registerCustomAction(
 
 	context.subscriptions.push(disposable);
 	registered.set(commandId, disposable);
-	actionInfo.set(commandId, { label: displayLabel, description: meta.description });
+	actionInfo.set(commandId, { label: displayLabel, description: meta.description, actionDir });
 	output.appendLine(`Registered custom action ${commandId} -> ${displayLabel}: ${meta.description}`);
 }
 

@@ -2,6 +2,34 @@
 
 A VS Code extension that lets a workspace define its own Command Palette actions as plain JavaScript files, no extension packaging required.
 
+## Custom Actions vs. Tasks
+
+VS Code already ships an automation mechanism: [tasks](https://code.visualstudio.com/docs/editor/tasks) (`.vscode/tasks.json`). Custom Actions solves a different problem, and the two are meant to be used together, not as substitutes.
+
+**Tasks run external processes.** A task shells out to a command (`npm run build`, `pytest`, `eslint`, ...) and streams its stdout/exit code into the Terminal and Problems panel. The definition is declarative JSON — there's no code involved, so a task has no way to reach into the IDE itself. It can't read your current selection, can't prompt with a Quick Pick, can't insert text at the cursor, can't open a webview, can't call another command. Anything a task does, it does by spawning a process and inspecting its output.
+
+**Custom Actions automate the IDE itself.** Each action is a JavaScript function that receives the real `vscode` API object — the same one an installed extension gets. It runs in-process, so it can manipulate the active editor, show input boxes and quick picks, read or write workspace state, call any other registered command, and so on. There's no process boundary and no output-scraping involved.
+
+**Custom Actions need no extension scaffolding.** A task still needs JSON ceremony (problem matchers, presentation, groups); a real extension needs `package.json` contribution points, an `activate()` entry point, and usually packaging/publishing. A custom action is one file, saved directly in the workspace:
+
+```js
+module.exports = async ({ vscode }) => {
+  vscode.window.showInformationMessage('Hello!');
+};
+```
+
+It's hot-reloaded on save and discoverable through `Custom Actions: Run...` — no compile step, no install.
+
+| | Tasks | Custom Actions |
+|---|---|---|
+| Runs | external processes | JS functions, in-process |
+| Can call the `vscode` API | no | yes |
+| Definition | `tasks.json` (declarative) | `entry.js` (code) |
+| Best for | builds, tests, linters — anything with stdout/exit codes | editor/workspace automation, prompts, glue between commands |
+| Setup | JSON block in `.vscode/tasks.json` | a folder under `.vscode/custom-actions/` |
+
+Use tasks for your build/test/lint pipeline. Use custom actions for anything that needs to touch the editor or workspace state directly, or for a one-off workspace command that doesn't justify writing a real extension.
+
 ## How it works
 
 Drop a folder per action under `.vscode/custom-actions/`:

@@ -73,6 +73,11 @@ Each action is registered as the command `customActions.<folder-name>`. VS Code'
 
 The extension watches the custom-actions directories and reloads automatically whenever a `meta.json`/`entry.js` is added, changed, or removed. If an action fails to load (invalid JSON, missing fields, a script that throws on load, a script that doesn't export a function, or a duplicate action name), it's skipped, and a warning notification lists which actions failed and why (full details go to the `Custom Actions` output channel). You can also trigger a manual reload with the `Custom Actions: Reload` command.
 
+### Editing and creating actions
+
+- `Custom Actions: Edit...` opens a Quick Pick of every currently loaded action; selecting one reveals its folder in the Explorer and opens its `entry.js` for editing.
+- `Custom Actions: Create New Action...` scaffolds a new action: it asks which configured directory to create it in (if more than one is configured), prompts for a name and a description, writes a `meta.json` and a stub `entry.js`, then reveals and opens the new `entry.js` so you can start implementing it right away. The new action registers itself automatically via the existing file watcher — no manual reload needed.
+
 Workspace trust is required to run actions; in an untrusted workspace, invoking an action shows an error instead of executing.
 
 ### Scanning additional directories
